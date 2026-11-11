@@ -44,6 +44,7 @@ st.markdown(
 This is a **generative classifier**: each group has its own model of how its members behave.
 """
 )
+st.page_link("app_pages/model_process.py", label="See the full process diagram", icon="🗺️")
 
 st.header("The math")
 st.markdown("**Transition matrix** of group $c$, estimated from counts with Laplace smoothing $\\alpha$:")

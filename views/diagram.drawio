@@ -1,0 +1,226 @@
+<mxfile host="drawio">
+    <diagram id="model-process" name="Model Process">
+        <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1700" pageHeight="1200" math="0" shadow="0">
+            <root>
+                <mxCell id="0" />
+                <mxCell id="1" parent="0" />
+                <mxCell id="title" value="&lt;b&gt;Customer Care Call Prediction — Model Building and User Classification&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;Class-conditional Markov chains: one transition matrix per group, prediction by the highest likelihood&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;fontSize=20;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="10" width="1640" height="55" as="geometry" />
+                </mxCell>
+                <mxCell id="zone-a" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce5cd;strokeColor=#d79b00;dashed=1;dashPattern=12 6;opacity=40;arcSize=2;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="75" width="1640" height="515" as="geometry" />
+                </mxCell>
+                <mxCell id="zone-a-label" value="&lt;b&gt;PHASE A — BUILD THE MODELS&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px&quot;&gt;Labeled users: whether each user called is already known&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=top;strokeColor=none;fillColor=none;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry x="35" y="81" width="420" height="36" as="geometry" />
+                </mxCell>
+                <mxCell id="a1" value="&lt;b&gt;A1 · Collect events&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font style=&quot;font-size:9px&quot;&gt;Events of all users&lt;br&gt;in a 2-hour window&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="125" width="190" height="90" as="geometry" />
+                </mxCell>
+                <mxCell id="a2" value="&lt;b&gt;A2 · Build state sequences&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font style=&quot;font-size:9px&quot;&gt;One sequence per user, in time order.&lt;br&gt;Each event → one of 11 states.&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="290" y="125" width="190" height="90" as="geometry" />
+                </mxCell>
+                <mxCell id="a3" value="&lt;b&gt;A3 · Split by label&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px&quot;&gt;Did the user call&lt;br&gt;customer care&lt;br&gt;after the window?&lt;/font&gt;" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="760" y="110" width="200" height="120" as="geometry" />
+                </mxCell>
+                <mxCell id="lane-call" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;opacity=35;arcSize=4;" parent="1" vertex="1">
+                    <mxGeometry x="550" y="260" width="220" height="310" as="geometry" />
+                </mxCell>
+                <mxCell id="group-call" value="&lt;b&gt;Group · Called&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px&quot;&gt;called = 1&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;shadow=1;arcSize=50;" parent="1" vertex="1">
+                    <mxGeometry x="560" y="275" width="200" height="42" as="geometry" />
+                </mxCell>
+                <mxCell id="a4-call" value="&lt;b&gt;A4 · Count transitions&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font style=&quot;font-size:9px&quot;&gt;Count i → j inside each user's sequence,&lt;br&gt;then normalize each row&lt;br&gt;→ P(next state | current state)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="560" y="345" width="200" height="90" as="geometry" />
+                </mxCell>
+                <mxCell id="a5-call" value="&lt;b&gt;A5 · Transition matrix A&lt;sub&gt;call&lt;/sub&gt;&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font style=&quot;font-size:9px&quot;&gt;11 × 11, each row sums to 1&lt;br&gt;+ first-state distribution π&lt;sub&gt;call&lt;/sub&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#b85450;fontSize=11;shadow=1;strokeWidth=2;" parent="1" vertex="1">
+                    <mxGeometry x="560" y="465" width="200" height="90" as="geometry" />
+                </mxCell>
+                <mxCell id="lane-nocall" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;dashed=1;opacity=35;arcSize=4;" parent="1" vertex="1">
+                    <mxGeometry x="950" y="260" width="220" height="310" as="geometry" />
+                </mxCell>
+                <mxCell id="group-nocall" value="&lt;b&gt;Group · Did not call&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px&quot;&gt;called = 0&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;shadow=1;arcSize=50;" parent="1" vertex="1">
+                    <mxGeometry x="960" y="275" width="200" height="42" as="geometry" />
+                </mxCell>
+                <mxCell id="a4-nocall" value="&lt;b&gt;A4 · Count transitions&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font style=&quot;font-size:9px&quot;&gt;Count i → j inside each user's sequence,&lt;br&gt;then normalize each row&lt;br&gt;→ P(next state | current state)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="960" y="345" width="200" height="90" as="geometry" />
+                </mxCell>
+                <mxCell id="a5-nocall" value="&lt;b&gt;A5 · Transition matrix A&lt;sub&gt;no call&lt;/sub&gt;&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font style=&quot;font-size:9px&quot;&gt;11 × 11, each row sums to 1&lt;br&gt;+ first-state distribution π&lt;sub&gt;no call&lt;/sub&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#82b366;fontSize=11;shadow=1;strokeWidth=2;" parent="1" vertex="1">
+                    <mxGeometry x="960" y="465" width="200" height="90" as="geometry" />
+                </mxCell>
+                <mxCell id="model-notes" value="&lt;b&gt;The model of each group = (π, A)&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;A(i, j) = (N(i→j) + α) / (Σ&lt;sub&gt;k&lt;/sub&gt; N(i→k) + Kα)&lt;br&gt;π(i) = (N&lt;sub&gt;first&lt;/sub&gt;(i) + β) / (Σ&lt;sub&gt;k&lt;/sub&gt; N&lt;sub&gt;first&lt;/sub&gt;(k) + Kβ)&lt;br&gt;&lt;br&gt;• K = 11 states (action types)&lt;br&gt;• N(i→j): transitions counted inside each&lt;br&gt;&amp;nbsp;&amp;nbsp;user's sequence, never across users&lt;br&gt;• α = β = 1 (Laplace smoothing): an unseen&lt;br&gt;&amp;nbsp;&amp;nbsp;transition gets a small probability, not 0&lt;br&gt;• Training data: 20,000 synthetic users, ~5% called&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#cccccc;dashed=1;align=left;verticalAlign=top;spacing=12;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="1230" y="260" width="410" height="310" as="geometry" />
+                </mxCell>
+                <mxCell id="zone-b" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;dashPattern=12 6;opacity=30;arcSize=2;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="620" width="1640" height="360" as="geometry" />
+                </mxCell>
+                <mxCell id="zone-b-label" value="&lt;b&gt;PHASE B — CLASSIFY A USER&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px&quot;&gt;A new user whose call outcome is unknown&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=top;strokeColor=none;fillColor=none;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry x="35" y="626" width="420" height="36" as="geometry" />
+                </mxCell>
+                <mxCell id="b1" value="&lt;b&gt;B1 · Get the user&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font style=&quot;font-size:9px&quot;&gt;Collect the user's events&lt;br&gt;from the last 2 hours&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="765" width="180" height="90" as="geometry" />
+                </mxCell>
+                <mxCell id="b2" value="&lt;b&gt;B2 · Build state sequence&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font style=&quot;font-size:9px&quot;&gt;Same time ordering and the&lt;br&gt;same 11-state mapping as A2&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="250" y="765" width="180" height="90" as="geometry" />
+                </mxCell>
+                <mxCell id="b3" value="&lt;b&gt;B3 · Likelihood of the sequence under each model&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;dashed=1;dashPattern=8 4;strokeWidth=2;verticalAlign=top;spacingTop=4;fontSize=12;arcSize=4;" parent="1" vertex="1">
+                    <mxGeometry x="540" y="690" width="640" height="240" as="geometry" />
+                </mxCell>
+                <mxCell id="b3-call" value="&lt;b&gt;log L&lt;sub&gt;call&lt;/sub&gt;&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font style=&quot;font-size:9px&quot;&gt;log π&lt;sub&gt;call&lt;/sub&gt;(x&lt;sub&gt;1&lt;/sub&gt;) + Σ&lt;sub&gt;t&lt;/sub&gt; log A&lt;sub&gt;call&lt;/sub&gt;(x&lt;sub&gt;t&lt;/sub&gt;, x&lt;sub&gt;t+1&lt;/sub&gt;)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="560" y="755" width="200" height="110" as="geometry" />
+                </mxCell>
+                <mxCell id="b3-nocall" value="&lt;b&gt;log L&lt;sub&gt;no call&lt;/sub&gt;&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font style=&quot;font-size:9px&quot;&gt;log π&lt;sub&gt;no call&lt;/sub&gt;(x&lt;sub&gt;1&lt;/sub&gt;) + Σ&lt;sub&gt;t&lt;/sub&gt; log A&lt;sub&gt;no call&lt;/sub&gt;(x&lt;sub&gt;t&lt;/sub&gt;, x&lt;sub&gt;t+1&lt;/sub&gt;)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="960" y="755" width="200" height="110" as="geometry" />
+                </mxCell>
+                <mxCell id="b4" value="&lt;b&gt;B4 · Compare&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px&quot;&gt;log L&lt;sub&gt;call&lt;/sub&gt; &amp;gt; log L&lt;sub&gt;no call&lt;/sub&gt; ?&lt;/font&gt;" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="1225" y="750" width="170" height="120" as="geometry" />
+                </mxCell>
+                <mxCell id="b5-label" value="&lt;b&gt;B5 · Assign the user&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px&quot;&gt;to the group with the highest likelihood&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=top;strokeColor=none;fillColor=none;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="1440" y="630" width="210" height="40" as="geometry" />
+                </mxCell>
+                <mxCell id="b5-call" value="&lt;b&gt;Will call&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font style=&quot;font-size:9px&quot;&gt;Call the user first&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="1440" y="680" width="180" height="80" as="geometry" />
+                </mxCell>
+                <mxCell id="b5-nocall" value="&lt;b&gt;Will not call&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font style=&quot;font-size:9px&quot;&gt;No proactive call&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="1440" y="860" width="180" height="80" as="geometry" />
+                </mxCell>
+                <mxCell id="e-a1-a2" value="events" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeWidth=2;strokeColor=#666666;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=9;labelBackgroundColor=#ffffff;fontColor=#333333;" parent="1" edge="1" source="a1" target="a2">
+                    <mxGeometry relative="1" as="geometry" />
+                </mxCell>
+                <mxCell id="e-a2-a3" value="one sequence per user" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeWidth=2;strokeColor=#666666;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=9;labelBackgroundColor=#ffffff;fontColor=#333333;" parent="1" edge="1" source="a2" target="a3">
+                    <mxGeometry relative="1" as="geometry" />
+                </mxCell>
+                <mxCell id="e-a3-call" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeWidth=2;strokeColor=#b85450;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=9;labelBackgroundColor=#ffffff;fontColor=#b85450;" parent="1" edge="1" source="a3" target="group-call">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="860" y="245" />
+                            <mxPoint x="660" y="245" />
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e-a3-nocall" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeWidth=2;strokeColor=#82b366;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=9;labelBackgroundColor=#ffffff;fontColor=#82b366;" parent="1" edge="1" source="a3" target="group-nocall">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="860" y="245" />
+                            <mxPoint x="1060" y="245" />
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e-group-a4-call" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeWidth=2;strokeColor=#b85450;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=9;labelBackgroundColor=#ffffff;fontColor=#333333;" parent="1" edge="1" source="group-call" target="a4-call">
+                    <mxGeometry relative="1" as="geometry" />
+                </mxCell>
+                <mxCell id="e-a4-a5-call" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeWidth=2;strokeColor=#b85450;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=9;labelBackgroundColor=#ffffff;fontColor=#333333;" parent="1" edge="1" source="a4-call" target="a5-call">
+                    <mxGeometry relative="1" as="geometry" />
+                </mxCell>
+                <mxCell id="e-group-a4-nocall" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeWidth=2;strokeColor=#82b366;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=9;labelBackgroundColor=#ffffff;fontColor=#333333;" parent="1" edge="1" source="group-nocall" target="a4-nocall">
+                    <mxGeometry relative="1" as="geometry" />
+                </mxCell>
+                <mxCell id="e-a4-a5-nocall" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeWidth=2;strokeColor=#82b366;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=9;labelBackgroundColor=#ffffff;fontColor=#333333;" parent="1" edge="1" source="a4-nocall" target="a5-nocall">
+                    <mxGeometry relative="1" as="geometry" />
+                </mxCell>
+                <mxCell id="e-a5-b3-call" value="&lt;b&gt;A&lt;sub&gt;call&lt;/sub&gt;, π&lt;sub&gt;call&lt;/sub&gt;&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeWidth=3;strokeColor=#9673a6;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=9;labelBackgroundColor=#ffffff;fontColor=#9673a6;" parent="1" edge="1" source="a5-call" target="b3-call">
+                    <mxGeometry relative="1" as="geometry" />
+                </mxCell>
+                <mxCell id="e-a5-b3-nocall" value="&lt;b&gt;A&lt;sub&gt;no call&lt;/sub&gt;, π&lt;sub&gt;no call&lt;/sub&gt;&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeWidth=3;strokeColor=#9673a6;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=9;labelBackgroundColor=#ffffff;fontColor=#9673a6;" parent="1" edge="1" source="a5-nocall" target="b3-nocall">
+                    <mxGeometry relative="1" as="geometry" />
+                </mxCell>
+                <mxCell id="e-b1-b2" value="events" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeWidth=2;strokeColor=#666666;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=9;labelBackgroundColor=#ffffff;fontColor=#333333;" parent="1" edge="1" source="b1" target="b2">
+                    <mxGeometry relative="1" as="geometry" />
+                </mxCell>
+                <mxCell id="e-b2-b3" value="x&lt;sub&gt;1&lt;/sub&gt; → … → x&lt;sub&gt;n&lt;/sub&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeWidth=2;strokeColor=#666666;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=9;labelBackgroundColor=#ffffff;fontColor=#333333;" parent="1" edge="1" source="b2" target="b3">
+                    <mxGeometry relative="1" as="geometry" />
+                </mxCell>
+                <mxCell id="e-b3-b4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeWidth=2;strokeColor=#666666;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=9;labelBackgroundColor=#ffffff;fontColor=#333333;" parent="1" edge="1" source="b3" target="b4">
+                    <mxGeometry relative="1" as="geometry" />
+                </mxCell>
+                <mxCell id="e-b4-call" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeWidth=2;strokeColor=#b85450;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=9;labelBackgroundColor=#ffffff;fontColor=#b85450;" parent="1" edge="1" source="b4" target="b5-call">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1310" y="720" />
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e-b4-nocall" value="No (or tie)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeWidth=2;strokeColor=#82b366;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=9;labelBackgroundColor=#ffffff;fontColor=#82b366;" parent="1" edge="1" source="b4" target="b5-nocall">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1310" y="900" />
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="legend-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#cccccc;dashed=1;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="1000" width="640" height="150" as="geometry" />
+                </mxCell>
+                <mxCell id="legend-title" value="&lt;b&gt;Legend&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry x="35" y="1005" width="80" height="25" as="geometry" />
+                </mxCell>
+                <mxCell id="l-step" value="" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="1042" width="18" height="14" as="geometry" />
+                </mxCell>
+                <mxCell id="l-step-t" value="Processing step" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="64" y="1038" width="140" height="22" as="geometry" />
+                </mxCell>
+                <mxCell id="l-call" value="" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="1072" width="18" height="14" as="geometry" />
+                </mxCell>
+                <mxCell id="l-call-t" value="Group: Called" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="64" y="1068" width="140" height="22" as="geometry" />
+                </mxCell>
+                <mxCell id="l-nocall" value="" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="1102" width="18" height="14" as="geometry" />
+                </mxCell>
+                <mxCell id="l-nocall-t" value="Group: Did not call" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="64" y="1098" width="140" height="22" as="geometry" />
+                </mxCell>
+                <mxCell id="l-model" value="" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="1042" width="18" height="14" as="geometry" />
+                </mxCell>
+                <mxCell id="l-model-t" value="Model (π, A)" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="244" y="1038" width="140" height="22" as="geometry" />
+                </mxCell>
+                <mxCell id="l-decision" value="" style="rhombus;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="1072" width="18" height="14" as="geometry" />
+                </mxCell>
+                <mxCell id="l-decision-t" value="Decision" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="244" y="1068" width="140" height="22" as="geometry" />
+                </mxCell>
+                <mxCell id="la-flow" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#666666;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="400" y="1049" as="sourcePoint" />
+                        <mxPoint x="440" y="1049" as="targetPoint" />
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="la-flow-t" value="Data flow" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="448" y="1038" width="200" height="22" as="geometry" />
+                </mxCell>
+                <mxCell id="la-call" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#b85450;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="400" y="1073" as="sourcePoint" />
+                        <mxPoint x="440" y="1073" as="targetPoint" />
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="la-call-t" value="Flow of the Called group" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="448" y="1062" width="200" height="22" as="geometry" />
+                </mxCell>
+                <mxCell id="la-nocall" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#82b366;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="400" y="1097" as="sourcePoint" />
+                        <mxPoint x="440" y="1097" as="targetPoint" />
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="la-nocall-t" value="Flow of the Did-not-call group" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="448" y="1086" width="200" height="22" as="geometry" />
+                </mxCell>
+                <mxCell id="la-model" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#9673a6;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="400" y="1121" as="sourcePoint" />
+                        <mxPoint x="440" y="1121" as="targetPoint" />
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="la-model-t" value="Model used for scoring" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="448" y="1110" width="200" height="22" as="geometry" />
+                </mxCell>
+                <mxCell id="impl-notes" value="&lt;b&gt;Process vs. current implementation&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;1. &lt;b&gt;Training window:&lt;/b&gt; the label is known only after the window, so phase A must use past windows; only phase B uses the last 2 hours.&lt;br&gt;2. &lt;b&gt;No real event log yet:&lt;/b&gt; the data is synthetic and each sequence is generated already in time order, so the 2-hour window and the time sorting (A1–A2, B1–B2) are not implemented.&lt;br&gt;3. &lt;b&gt;Label:&lt;/b&gt; in the synthetic data the label is drawn first and then drives the actions. For real data, &quot;called&quot; must be defined as a call within a fixed horizon after the window.&lt;br&gt;4. &lt;b&gt;Beyond the listed steps:&lt;/b&gt; the model also uses the first-state distribution π and Laplace smoothing (α = β = 1).&lt;br&gt;5. &lt;b&gt;Decision:&lt;/b&gt; likelihood only, without the prior P(call). A tie goes to &quot;Will not call&quot;. Event types outside the 11 states are not handled.&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#d6b656;dashed=1;align=left;verticalAlign=top;spacing=12;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="680" y="1000" width="980" height="150" as="geometry" />
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

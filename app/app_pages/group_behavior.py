@@ -5,14 +5,12 @@ import streamlit as st
 
 from simulation import (
     ACTION_DESCRIPTIONS,
-    ACTION_INDEX,
     ACTIONS,
     TRUE_FIRST_ACTION,
     TRUE_MATRIX_CALL,
     TRUE_MATRIX_NO_CALL,
 )
 
-GROUP_COLORS = alt.Scale(domain=["Did not call", "Called"], range=["#21c354", "#ff4b4b"])
 MATRIX_HEIGHT = 640
 
 st.title("🧭 How the Two Groups Behave")
@@ -90,28 +88,6 @@ st.altair_chart(heatmap(difference, "difference", difference_scale, "+.2f", 0.08
                 width="stretch")
 
 
-def grouped_bars(data, category, y_title):
-    return alt.Chart(data).mark_bar().encode(
-        x=alt.X(f"{category}:N", sort=ACTIONS, axis=alt.Axis(labelAngle=-45, labelLimit=220, labelOverlap=False), title=None),
-        xOffset="group:N",
-        y=alt.Y("probability:Q", title=y_title),
-        color=alt.Color("group:N", scale=GROUP_COLORS, legend=alt.Legend(orient="top")),
-        tooltip=["group", category, alt.Tooltip("probability:Q", format=".3f")],
-    ).properties(height=420)
-
-
-st.header("Next-action distribution")
-st.markdown("Pick a current action to compare what each group does next. This is one row of each matrix.")
-current_action = st.selectbox("Current action", ACTIONS, index=ACTION_INDEX["fx_transfer_failed"])
-row = ACTION_INDEX[current_action]
-next_action = pd.concat([
-    pd.DataFrame({"next action": ACTIONS, "probability": TRUE_MATRIX_NO_CALL[row], "group": "Did not call"}),
-    pd.DataFrame({"next action": ACTIONS, "probability": TRUE_MATRIX_CALL[row], "group": "Called"}),
-])
-st.altair_chart(grouped_bars(next_action, "next action", f"P(next action | {current_action})"),
-                width="stretch")
-
-
 def long_run_share(matrix, start, n_steps=500):
     """Share of each action in a very long session: apply the matrix many times."""
     distribution = start.copy()
@@ -122,38 +98,13 @@ def long_run_share(matrix, start, n_steps=500):
 
 share_no_call = long_run_share(TRUE_MATRIX_NO_CALL, TRUE_FIRST_ACTION)
 share_call = long_run_share(TRUE_MATRIX_CALL, TRUE_FIRST_ACTION)
-
-st.header("How often each action appears")
-col_first, col_share = st.columns(2)
-with col_first:
-    st.subheader("First action")
-    st.caption(
-        "The window can start in the middle of a session, so the first action is not always `login`. "
-        "Both groups use the same distribution, so the first action does not reveal the group."
-    )
-    first_action = pd.DataFrame({"action": ACTIONS, "probability": TRUE_FIRST_ACTION})
-    st.altair_chart(
-        alt.Chart(first_action).mark_bar(color="#7f8c8d").encode(
-            x=alt.X("action:N", sort=ACTIONS, axis=alt.Axis(labelAngle=-45, labelLimit=220, labelOverlap=False), title=None),
-            y=alt.Y("probability:Q", title="P(first action)"),
-            tooltip=["action", alt.Tooltip("probability:Q", format=".3f")],
-        ).properties(height=420),
-        width="stretch",
-    )
-with col_share:
-    st.subheader("All actions in a long session")
-    st.caption(
-        "The share of each action after many steps (the stationary distribution of each matrix). "
-        "Callers spend more of their time on failures, retries and the help page."
-    )
-    shares = pd.concat([
-        pd.DataFrame({"action": ACTIONS, "probability": share_no_call, "group": "Did not call"}),
-        pd.DataFrame({"action": ACTIONS, "probability": share_call, "group": "Called"}),
-    ])
-    st.altair_chart(grouped_bars(shares, "action", "share of all actions"), width="stretch")
+max_share = float(max(share_no_call.max(), share_call.max()))
 
 st.header("The actions")
-st.caption("What each action means, and how common it is in each group in a long session.")
+st.caption(
+    "What each action means, and its share of all actions in a long session of each group "
+    "(the stationary distribution of each matrix)."
+)
 ratio = share_call / share_no_call
 actions_table = pd.DataFrame({
     "Action": ACTIONS,
@@ -169,8 +120,8 @@ st.dataframe(
     height=(len(actions_table) + 1) * 35 + 3,  # show every row without scrolling
     column_config={
         "Share (did not call)": st.column_config.ProgressColumn(format="percent", min_value=0,
-                                                               max_value=float(shares["probability"].max())),
+                                                               max_value=max_share),
         "Share (called)": st.column_config.ProgressColumn(format="percent", min_value=0,
-                                                         max_value=float(shares["probability"].max())),
+                                                         max_value=max_share),
     },
 )
