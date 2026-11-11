@@ -257,7 +257,7 @@ init_state()
 st.markdown(STYLES, unsafe_allow_html=True)
 models, group_sizes = get_models()
 
-st.title("🎲 Generate Sequence")
+st.title("📞 Will This Customer Call?")
 st.markdown(
     "Build the actions a user performed in the last two hours, in order, and predict whether "
     "the user will call customer care."

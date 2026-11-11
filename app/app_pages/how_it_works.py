@@ -25,7 +25,7 @@ def diagram_html(width):
     )
 
 
-st.title("🗺️ Model Process")
+st.title("🗺️ How the Model Works")
 st.markdown("How the two Markov models are built, and how they are used to classify a user.")
 
 col_build, col_classify = st.columns(2)

@@ -13,7 +13,7 @@ from simulation import (
 
 MATRIX_HEIGHT = 640
 
-st.title("🧭 How the Two Groups Behave")
+st.title("📊 How Callers and Non-callers Behave")
 st.markdown(
     """
 Each group has its own **transition matrix**: the probability of each next action, given the
