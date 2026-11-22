@@ -40,9 +40,13 @@ The app has four pages:
 
 ## How to run
 
+**On Windows:** double-click `run_app.bat`. It installs the packages the first time, starts the app and opens it at http://localhost:8900. Close the window to stop the app.
+
+**From a terminal:**
+
 ```
 pip install -r requirements.txt
-streamlit run app/streamlit_app.py
+streamlit run app/streamlit_app.py --server.port 8900
 ```
 
 The notebooks in `generative_classifier/` show the same process in detail. Run them in order: 1, 2, 3.
