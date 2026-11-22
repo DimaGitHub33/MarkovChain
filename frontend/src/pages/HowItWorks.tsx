@@ -168,10 +168,10 @@ export default function HowItWorksPage() {
           ))}
         </div>
         <div className="mt-6 flex flex-wrap gap-3">
-          <a href="/docs/diagram.drawio" download className="inline-flex h-10 items-center gap-2 rounded-xl border border-line bg-surface px-4 text-sm font-semibold transition hover:border-line-strong">
+          <a href="/docs/model-process.drawio" download className="inline-flex h-10 items-center gap-2 rounded-xl border border-line bg-surface px-4 text-sm font-semibold transition hover:border-line-strong">
             <Icon name="download" size={16} /> Diagram source (draw.io)
           </a>
-          <a href="/docs/diagram.png" target="_blank" rel="noreferrer" className="inline-flex h-10 items-center gap-2 rounded-xl border border-line bg-surface px-4 text-sm font-semibold transition hover:border-line-strong">
+          <a href="/docs/model-process.png" target="_blank" rel="noreferrer" className="inline-flex h-10 items-center gap-2 rounded-xl border border-line bg-surface px-4 text-sm font-semibold transition hover:border-line-strong">
             <Icon name="download" size={16} /> Diagram image (PNG)
           </a>
         </div>

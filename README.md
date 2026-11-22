@@ -10,51 +10,46 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-double--click_to_run-0078D4?logo=windows&logoColor=white)
 
+[The idea](#the-idea) · [How the model works](#how-the-model-works) · [The app](#the-app) · [Run it](#run-it) · [Results](#results)
+
 <img src="docs/images/overview.png" alt="The Overview page of the app" width="900">
 
 </div>
 
-## 💡 The idea
+## The idea
 
-When something goes wrong, such as a failed transfer or a locked password, customers often call customer care. Their actions in the last two hours usually show it.
+When something goes wrong, like a failed transfer or a locked password, customers often call customer care. Their actions in the last two hours usually show it.
 
-This project learns how **callers** and **non-callers** move from one action to the next. It then uses this to find customers who are likely to call, **before** they call.
+This project learns how **callers** and **non-callers** move from one action to the next. It then uses this to spot customers who are likely to call, **before** they call.
 
-## 🧠 How the model works
+## How the model works
 
-```mermaid
-flowchart TB
-    subgraph LEARN["① Learn from past customers"]
-        direction LR
-        L1["Actions from<br/>the last 2 hours"] --> L2["One sequence<br/>per customer"]
-        L2 --> L3{"Called?"}
-        L3 -- "yes" --> MC["Callers'<br/>transition matrix"]
-        L3 -- "no" --> MN["Non-callers'<br/>transition matrix"]
-    end
-    subgraph PREDICT["② Predict for a new customer"]
-        direction LR
-        P1["The new customer's<br/>sequence"] --> P2["Likelihood under<br/>each matrix"]
-        P2 --> P3{"Which is<br/>higher?"}
-        P3 -- "callers" --> R1["📞 Likely to call:<br/>call them first"]
-        P3 -- "non-callers" --> R2["✅ Unlikely to call"]
-    end
-    LEARN -- "both matrices" --> PREDICT
+<p align="center">
+  <a href="docs/model-process-diagram/model-process.png">
+    <img src="docs/model-process-diagram/model-process.png" alt="Process diagram. Phase A builds one transition matrix for callers and one for non-callers. Phase B scores a new customer's sequence under both and assigns the customer to the group with the higher likelihood." width="100%">
+  </a>
+  <br>
+  <sub>Click the diagram to see it full size · Editable source: <a href="docs/model-process-diagram/model-process.drawio"><code>model-process.drawio</code></a> (open it in <a href="https://app.diagrams.net">draw.io</a>)</sub>
+</p>
 
-    classDef callers fill:#ffedd5,stroke:#ea580c,color:#7c2d12
-    classDef noncallers fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
-    class MC,R1 callers
-    class MN,R2 noncallers
-```
+The model has two phases. Each step matches a box in the diagram.
 
-1. **Learn.** Split past customers into two groups: those who called and those who did not. In each group, count how often each action follows each other action, and turn the counts into probabilities. The result is a **transition matrix** for each group.
-2. **Predict.** For a new customer, ask: *which group's matrix makes this sequence of actions more likely?* If it is the callers' matrix, the customer is likely to call.
+| | 🟧 **Phase A · Build the models**<br><sub>Customers whose outcome is already known</sub> | 🟦 **Phase B · Classify a customer**<br><sub>A new customer, outcome unknown</sub> |
+|:-:|---|---|
+| **1** | **Collect events:** all customers' actions in a 2-hour window | **Get the customer:** their actions from the last 2 hours |
+| **2** | **Build sequences:** one per customer, in time order. Each action is one of 11 types | **Build the sequence:** the same way as in phase A |
+| **3** | **Split by label:** did the customer call customer care after the window? | **Score it:** compute the sequence's likelihood under each group's model |
+| **4** | **Count transitions:** in each group, count how often each action follows each other action | **Compare:** which of the two likelihoods is higher? |
+| **5** | **Transition matrices:** turn the counts into probabilities, one matrix per group | **Assign:** the group with the higher likelihood wins. Callers → **call them first** |
 
+> [!TIP]
 > **Example:** Log in → FX transfer attempt → **FX transfer failed** → FX transfer attempt → **FX transfer failed** → Open help page
 >
-> This sequence is **110× more likely** under the callers' pattern. The app says: *likely to call, so call this customer first.*
+> This sequence is **110× more likely** under the callers' model, so the customer is **likely to call**.
 
 <details>
 <summary><b>The math in three formulas</b></summary>
+<br>
 
 **1. Transition matrix of group *c*.** $N_c(i \to j)$ counts how often action $j$ follows action $i$ in group $c$. There are $K = 11$ actions. Laplace smoothing ($\alpha = 1$) gives unseen transitions a small probability instead of zero.
 
@@ -70,14 +65,14 @@ $$\hat{c} = \arg\max_{c \in \lbrace \text{callers}, \text{non-callers} \rbrace} 
 
 </details>
 
-## 🖥️ The app
+## The app
 
-The five pages tell the story in order:
+Five pages that tell the story in order:
 
 | | Page | What you can do |
-|---|---|---|
+|:-:|---|---|
 | 📘 | **Overview** | Read about the problem, see two example customers, the method and the math |
-| 🗺️ | **How It Works** | Follow a diagram of the two phases: building the models and classifying a customer |
+| 🗺️ | **How It Works** | Follow the two phases step by step: building the models and classifying a customer |
 | 📊 | **Behavior Patterns** | Explore the two transition matrices and how they differ, cell by cell |
 | 📞 | **Predict** | Build a customer's actions and get a prediction, with the strength of the evidence and the effect of each step |
 | 📈 | **Performance** | See the results on 10,000 test customers and try different daily call budgets |
@@ -93,9 +88,9 @@ The five pages tell the story in order:
   </tr>
 </table>
 
-## 🚀 Run it
+## Run it
 
-### What you need
+### 1. What you need
 
 | | Why |
 |---|---|
@@ -104,7 +99,7 @@ The five pages tell the story in order:
 | [**Node.js**](https://nodejs.org) 22 LTS or newer | Builds the web pages. First run only |
 | An internet connection | Downloads the packages. First run only |
 
-### Start the app
+### 2. Start the app
 
 1. Get the project: `git clone https://github.com/DimaGitHub33/MarkovChain.git`, or use **Code → Download ZIP** on GitHub.
 2. Double-click **`run_app.bat`**.
@@ -116,7 +111,7 @@ To stop the app, close the black window.
 > The **first run** takes a few minutes: the launcher creates a Python environment, installs the packages and builds the web pages. After that, the app starts in about 10 seconds.
 > The launcher works from any folder, so you can also start it from a shortcut or a terminal.
 
-### If something goes wrong
+### 3. If something goes wrong
 
 | Message | What to do |
 |---|---|
@@ -124,28 +119,31 @@ To stop the app, close the black window.
 | *Node.js was not found* | Install Node.js 22 LTS, then run `run_app.bat` again. |
 | *Port 8900 is already in use* | The app is probably already running. Open http://localhost:8900. |
 
-## 📊 Results
+## Results
 
-On 10,000 synthetic test customers that the model has never seen (about 5% of them called):
+Tested on 10,000 synthetic customers that the model has never seen. About 5% of them called.
 
-- Calling the **top 100** customers reaches a real caller **61%** of the time. Calling at random reaches one only **5%** of the time.
-- Ranking quality (AUC) is **0.735**, close to the best possible on this data, **0.750**.
+| | Markov model | Calling at random |
+|---|:-:|:-:|
+| **Calls that reach a real caller** (top 100 customers) | **61%** | 5% |
+| **Ranking quality** (AUC, best possible here is 0.750) | **0.735** | 0.5 |
 
-## 📁 What's inside
+## What's inside
 
 ```
-backend/       the model (markov_calls/) and the web server (api/), with tests
-frontend/      the web pages (React)
-notebooks/     the analysis, step by step: data → transition matrices → evaluation
-scripts/       helper scripts for building and testing
-docs/images/   the screenshots on this page
-run_app.bat    the one-click launcher
+backend/                     the model (markov_calls/) and the web server (api/), with tests
+frontend/                    the web pages (React)
+notebooks/                   the analysis, step by step: data → transition matrices → evaluation
+docs/model-process-diagram/  the process diagram: draw.io source and PNG
+docs/images/                 the screenshots on this page
+scripts/                     helper scripts for building and testing
+run_app.bat                  the one-click launcher
 ```
 
-## 🛠️ For developers
+## For developers
 
 <details>
-<summary><b>Development mode, tests, API and notebooks</b></summary>
+<summary><b>Development mode, tests, API, notebooks and the diagram</b></summary>
 
 ### Scripts
 
@@ -181,13 +179,20 @@ The notebooks show the same process in detail. Run them in order: 1, 2, 3.
 pip install -r notebooks\requirements.txt
 ```
 
+### Editing the diagram
+
+1. Open `docs/model-process-diagram/model-process.drawio` in [draw.io](https://app.diagrams.net) or the draw.io desktop app.
+2. Export it as PNG (zoom 120%, white background) over `model-process.png` in the same folder.
+3. Run `scripts\build_frontend.bat`. The README and the app's download links both use this folder.
+
 ### Technology
 
 Python, NumPy, FastAPI and pytest on the server. React, TypeScript, Vite, Tailwind CSS and Vitest for the web pages. The charts are plain SVG.
 
 </details>
 
-## 📝 Good to know
+## Good to know
 
 - The data is **synthetic**: 20,000 training customers and 10,000 test customers, created with fixed random seeds. Every run gives the same results.
 - The model looks only at the **order** of actions. Each step depends only on the action before it, not on timing.
+- The yellow box at the bottom of the diagram lists what a production version would still need, such as a real event log and training on past windows.
