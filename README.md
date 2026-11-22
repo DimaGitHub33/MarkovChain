@@ -182,7 +182,7 @@ pip install -r notebooks\requirements.txt
 ### Editing the diagram
 
 1. Open `docs/model-process-diagram/model-process.drawio` in [draw.io](https://app.diagrams.net) or the draw.io desktop app.
-2. Export it as PNG (zoom 120%, white background) over `model-process.png` in the same folder.
+2. Export it as PNG (zoom 200%, white background) over `model-process.png` in the same folder.
 3. Run `scripts\build_frontend.bat`. The README and the app's download links both use this folder.
 
 ### Technology
