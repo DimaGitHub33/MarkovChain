@@ -2,4 +2,3 @@ numpy
 pandas
 matplotlib
 jupyter
-streamlit>=1.50

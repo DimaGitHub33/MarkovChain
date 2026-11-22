@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Find customers who are likely to call customer care, using one Markov chain per group." />
+    <meta name="theme-color" content="#4f46e5" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Customer Care Call Prediction</title>
+    <script>
+      // Apply the saved theme before the first paint, to avoid a flash of the wrong theme.
+      try {
+        const saved = localStorage.getItem("markovchain-theme");
+        const dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+        if (dark) document.documentElement.classList.add("dark");
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>This app needs JavaScript.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

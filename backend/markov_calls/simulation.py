@@ -1,44 +1,14 @@
-"""Synthetic user-session generator.
+"""The synthetic data-generating process.
 
-This is the same process as in generative_classifier/01_generate_data.ipynb.
-With the same seed, the app produces the same users as the notebook.
+The weights and the order of random draws are identical to the original project
+(notebook 01 and app/simulation.py), so the same seed produces the same users.
 """
 
+from dataclasses import dataclass
+
 import numpy as np
-import pandas as pd
 
-ACTIONS = [
-    "login",
-    "check_balance",
-    "check_exchange_rates",
-    "card_payment",
-    "transfer_to_own_account",
-    "transfer_to_other_user",
-    "fx_transfer_attempt",
-    "fx_transfer_failed",
-    "password_change_attempt",
-    "password_change_failed",
-    "open_help_page",
-]
-N_ACTIONS = len(ACTIONS)
-ACTION_INDEX = {action: i for i, action in enumerate(ACTIONS)}
-
-ACTION_DESCRIPTIONS = {
-    "login": "The user logs in",
-    "check_balance": "Checks the account balance",
-    "check_exchange_rates": "Checks currency exchange rates",
-    "card_payment": "Pays with a card",
-    "transfer_to_own_account": "Moves money between their own accounts",
-    "transfer_to_other_user": "Sends money to another user",
-    "fx_transfer_attempt": "Tries to make a foreign currency (FX) transfer",
-    "fx_transfer_failed": "The FX transfer failed",
-    "password_change_attempt": "Tries to change the password",
-    "password_change_failed": "The password change failed",
-    "open_help_page": "Opens the help page",
-}
-
-FAILURE_ACTIONS = {"fx_transfer_failed", "password_change_failed"}
-HELP_ACTIONS = {"open_help_page"}
+from .actions import ACTION_INDEX, N_ACTIONS
 
 NO_CALL_WEIGHTS = {
     "login": {"check_balance": 5, "check_exchange_rates": 2, "card_payment": 2,
@@ -65,6 +35,7 @@ NO_CALL_WEIGHTS = {
                        "password_change_attempt": 0.5},
 }
 
+# Callers behave like everyone else, except for these transitions.
 CALLER_CHANGES = {
     ("login", "fx_transfer_attempt"): 2,
     ("login", "password_change_attempt"): 1,
@@ -79,14 +50,17 @@ CALLER_CHANGES = {
     ("open_help_page", "open_help_page"): 1,
 }
 
-CALL_WEIGHTS = {action: dict(row) for action, row in NO_CALL_WEIGHTS.items()}
-for (_from, _to), _weight in CALLER_CHANGES.items():
-    CALL_WEIGHTS[_from][_to] = _weight
+FIRST_ACTION_WEIGHTS = {"login": 6, "check_balance": 2, "card_payment": 1, "check_exchange_rates": 1}
 
-FIRST_ACTION_WEIGHTS = {"login": 6, "check_balance": 2, "card_payment": 1,
-                        "check_exchange_rates": 1}
-
+# Every transition gets a small weight, so no true probability is exactly zero.
 BACKGROUND_WEIGHT = 0.05
+
+
+def _caller_weights():
+    weights = {action: dict(row) for action, row in NO_CALL_WEIGHTS.items()}
+    for (from_action, to_action), weight in CALLER_CHANGES.items():
+        weights[from_action][to_action] = weight
+    return weights
 
 
 def weights_to_transition_matrix(weights):
@@ -106,30 +80,47 @@ def weights_to_distribution(weights):
 
 TRUE_FIRST_ACTION = weights_to_distribution(FIRST_ACTION_WEIGHTS)
 TRUE_MATRIX_NO_CALL = weights_to_transition_matrix(NO_CALL_WEIGHTS)
-TRUE_MATRIX_CALL = weights_to_transition_matrix(CALL_WEIGHTS)
+TRUE_MATRIX_CALL = weights_to_transition_matrix(_caller_weights())
+
+
+@dataclass(frozen=True)
+class SimulationConfig:
+    n_users: int
+    call_rate: float = 0.05
+    min_actions: int = 3
+    max_actions: int = 20
+    seed: int = 1
+
+
+TRAIN_CONFIG = SimulationConfig(n_users=20_000, seed=1)
+TEST_CONFIG = SimulationConfig(n_users=10_000, seed=2)
+
+
+@dataclass(frozen=True)
+class Dataset:
+    sequences: list  # one list of action indices per user
+    called: np.ndarray  # 1 if the user called, else 0
+
+    @property
+    def lengths(self):
+        return np.array([len(sequence) for sequence in self.sequences])
 
 
 def generate_actions(n_actions, transition_matrix, rng):
     actions = [int(rng.choice(N_ACTIONS, p=TRUE_FIRST_ACTION))]
     for _ in range(n_actions - 1):
-        current = actions[-1]
-        actions.append(int(rng.choice(N_ACTIONS, p=transition_matrix[current])))
+        actions.append(int(rng.choice(N_ACTIONS, p=transition_matrix[actions[-1]])))
     return actions
 
 
-def generate_users(n_users, call_rate, min_actions, max_actions, seed, id_prefix="user"):
-    """Return one row per user: user_id, actions (list of names), n_actions, called (0/1)."""
-    rng = np.random.default_rng(seed)
-    rows = []
-    for i in range(n_users):
-        called = rng.random() < call_rate
-        matrix = TRUE_MATRIX_CALL if called else TRUE_MATRIX_NO_CALL
-        n_actions = int(rng.integers(min_actions, max_actions + 1))
-        actions = generate_actions(n_actions, matrix, rng)
-        rows.append({
-            "user_id": f"{id_prefix}_{i}",
-            "actions": [ACTIONS[a] for a in actions],
-            "n_actions": n_actions,
-            "called": int(called),
-        })
-    return pd.DataFrame(rows)
+def generate_users(config):
+    """Each user first gets a label, then a sequence drawn from the matrix of that label."""
+    rng = np.random.default_rng(config.seed)
+    sequences, called = [], []
+    for _ in range(config.n_users):
+        is_caller = rng.random() < config.call_rate
+        matrix = TRUE_MATRIX_CALL if is_caller else TRUE_MATRIX_NO_CALL
+        n_actions = int(rng.integers(config.min_actions, config.max_actions + 1))
+        sequences.append(generate_actions(n_actions, matrix, rng))
+        called.append(int(is_caller))
+    return Dataset(sequences=sequences, called=np.array(called))
